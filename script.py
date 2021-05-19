@@ -1,3 +1,4 @@
+# source: https://ichi.pro/pl/wizualizacja-sieci-bialkowych-w-pythonie-97485911222741
 import networkx as nx
 import requests
 import pandas as pd
