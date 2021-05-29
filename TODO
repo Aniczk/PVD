@@ -1,0 +1,18 @@
+TODO LIST
+
+
+1. Our main goal is to create "user-friendly" webserver that allows to create HTML report.
+    - HTML report will contain descirption of protein or proteins and their comparision
+    - User will be able to put, as an input, and ID of the FASTA sequence or list of IDS
+    - Webserver works only with Uniprot database
+    - We also would like to allow the User to choose which proteins characteristics should be included in the HTML report
+
+2. Project should be split to different, main tasks, such as:
+    a) Downloading from the database proteins that User select (FASTA format)
+    b) Create specific and efficient data structure from protein sequences
+    c) Perform algorithms to analyze the protein (avarage length, isoelectric point, aromaticity, etc.)
+    d) Visualize the analyze of the protein and present it as the HTML format
+    e) Create GUI (HTML) on the webserver that allows User to select: protein or list of protein IDs, characteristics to analyze, comparsion options.
+
+3. Also there is a need of doing tests, provide test data and usage. Webserver will be put on student's server.
+
