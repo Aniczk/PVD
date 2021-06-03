@@ -1,4 +1,5 @@
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
+import matplotlib.pyplot as plt
 
 # 3 example protein
 
@@ -8,9 +9,8 @@ seq_protein = ['MIEDNKENKDHSLERGRASLIFSLKNEVGGLIKALKIFQEKHVNLLHIESRKSKRRNSEFEIFV
 			   'MALSELALVRWLQESRRSRKLILFIVFLALLLDNMLLTVVVPIIPSYLYSIKHEKNATEIQTARPVHTASISDSFQSIFSYYDNSTMVTGNATRDLTLHQTATQHMVTNASAVPSDCPSEDKDLLNENVQVGLLFASKATVQLITNPFIGLLTNRIGYPIPIFAGFCIMFVSTIMFAFSSSYAFLLIARSLQGIGSSCSSVAGMGMLASVYTDDEERGNVMGIALGGLAMGVLVGPPFGSVLYEFVGKTAPFLVLAALVLLDGAIQLFVLQPSRVQPESQKGTPLTTLLKDPYILIAAGSICFANMGIAMLEPALPIWMMETMCSRKWQLGVAFLPASISYLIGTNIFGILAHKMGRWLCALLGMIIVGVSILCIPFAKNIYGLIAPNFGVGFAIGMVDSSMMPIMGYLVDLRHVSVYGSVYAIADVAFCMGYAIGPSAGGAIAKAIGFPWLMTIIGIIDILFAPLCFFLRSPPAKEEKMAILMDHNCPIKTKMYTQNNIQSYPIGEDEESESD'
 			  ]
 
-aa_quantity_list, count_aa_list, aa_content_molecular_weight_list, aa_gravy_values, aa_gravy_list, aa_aromatic_list, aa_isoelectric_list, aa_instability_list,\
-aa_instability_values, aa_flexibility_list, secondary_structure_fraction_list, percent_structure_list = [], [], [], [], [], [], [], [], [], [], [], []
-
+aa_quantity_list, count_aa_list, aa_content_molecular_weight_list, aa_gravy_values, aa_gravy_list, aa_aromatic_list, aa_isoelectric_list, aa_instability_list, \
+flexibility_list, aa_instability_values, secondary_structure_fraction_list, percent_structure_list, epsilon_prot_list = [], [], [], [], [], [], [], [], [], [], [], [], []
 for seq in seq_protein:
 	aa_quantity = len(seq)
 	aa_quantity_list.append(aa_quantity)
@@ -37,10 +37,13 @@ for seq in seq_protein:
 	else:
 		aa_instability_list.append("stable")
 	aa_instability_values.append(aa_instability)
-#	aa_flexibility = analysed_seq.flexibility()?
-#	aa_flexibility_list.append(aa_flexibility)
+	epsilon_prot = analysed_seq.molar_extinction_coefficient()
+	epsilon_prot_list.append(epsilon_prot)
+	flexibility = analysed_seq.flexibility()
+	flexibility_list.insert(-1, flexibility)
 	secondary_structure_fraction = analysed_seq.secondary_structure_fraction()
 	secondary_structure_fraction_list.append(list(secondary_structure_fraction))
+	
 for protein in secondary_structure_fraction_list:
 	percent_structure = [round(structure*100, 2) for structure in protein]
 	percent_structure_list.append(percent_structure)
@@ -71,13 +74,20 @@ print("\nThis method tests a protein for stability. Any value above 40 means the
 	  "\nImplementation of the method of Guruprasad et al. (1990, Protein Engineering, 4, 155-161).")
 print(aa_instability_values)
 print(aa_instability_list)
-
-# print("Implementation of the flexibility method of Vihinen et al. (1994, Proteins, 19, 141-149).")
-# print(aa_flexibility_list)
-
 print("\nMethod returns a list of the fraction of amino acids which tend to be in helix, turn or sheet:"
 	  "\nhelix: V (Valine), I (Isoleucine), Y (Tyrosine), F (Phenylalanine), W (Tryptophan), L (Leucine),"
 	  "\nturn: N (Asparagine), P (Proline), G (Glycine), S (Serine),"
 	  "\nsheet: E (Glutamic acid), M (Methionine), A (Alanine), L (Leucine)."
 	  "\nFor each protein every element represent percent [%] respectively helix, turn and sheet occurrence")
 print(percent_structure_list)
+print("\nCalculate the molar extinction coefficient."
+	  "\nCalculates the molar extinction coefficient assuming cysteines (reduced) and cystines residues (Cys-Cys-bond)"
+	  "\n[reduced - with reduced cysteines, oxidized - with disulfid bridges]")
+print(epsilon_prot_list)
+
+print("\nImplementation of the flexibility method of Vihinen et al. (1994, Proteins, 19, 141-149)."
+	  "\nTo view the change along a protein sequence can be plotted, with flexibility as scale")
+# print(flexibility_list)
+# example
+plt.plot(flexibility_list[0])
+plt.show()
