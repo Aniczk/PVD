@@ -5,9 +5,9 @@ import shutil
 
 # Find UIDs for SwissProt/UniProt entries
 
-def download_files(protein_list):
+def download_files(protein_list, organism_name):
     for g in protein_list:
-        query = entrez.SimpleQuery(g, "Gene Name") & entrez.SimpleQuery("Homo sapiens", "Organism") & entrez.SimpleQuery(
+        query = entrez.SimpleQuery(g, "Gene Name") & entrez.SimpleQuery(organism_name, "Organism") & entrez.SimpleQuery(
             "srcdb_swiss-prot", "Properties")
         # print("QUERY")
         # print(query)
@@ -50,9 +50,9 @@ def clean_up():
     shutil.rmtree(os.getcwd() + '/temp')
 
 
-def list_of_proteins(protein_list):
+def list_of_proteins(protein_list, organism_name):
     prepare()
-    download_files(protein_list)
+    download_files(protein_list, organism_name)
     L = convert_files_to_list(create_files_list(protein_list))
     clean_up()
     return L
