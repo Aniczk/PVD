@@ -6,8 +6,14 @@ import copy
 import sys
 from download_and_prepare_sequences import list_of_proteins
 
-organism = sys.argv[1] + ' ' + sys.argv[2]
-proteins = list(sys.argv[3:])
+parameters = sys.argv[1:]
+
+organism = parameters[0] + ' ' + parameters[1]
+proteins = parameters[2:]
+
+for i, protein in enumerate(proteins):
+	protein = protein.replace(',','')
+	proteins[i] = protein
 
 seq_protein = list_of_proteins(proteins,organism)
 
