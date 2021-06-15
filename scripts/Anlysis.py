@@ -1,22 +1,34 @@
+#!/usr/bin/env python3
+
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 import matplotlib.pyplot as plt
+import copy
+
 
 # 3 example protein
 
-proteins = ['TPH1', 'COMT', 'SLC18A2']
+proteins = ['TPH1', 'COMT']
 seq_protein = ['MIEDNKENKDHSLERGRASLIFSLKNEVGGLIKALKIFQEKHVNLLHIESRKSKRRNSEFEIFVDCDINREQLNDIFHLLKSHTNVLSVNLPDNFTLKEDGMETVPWFPKKISDLDHCANRVLMYGSELDADHPGFKDNVYRKRRKYFADLAMNYKHGDPIPKVEFTEEEIKTWGTVFQELNKLYPTHACREYLKNLPLLSKYCGYREDNIPQLEDVSNFLKERTGFSIRPVAGYLSPRDFLSGLAFRVFHCTQYVRHSSDPFYTPEPDTCHELLGHVPLLAEPSFAQFSQEIGLASLGASEEAVQKLATCYFFTVEFGLCKQDGQLRVFGAGLLSSISELKHALSGHAKVKPFDPKITCKQECLITTFQDVYFVSESFEDAKEKMREFTKTIKRPFGVKYNPYTRSIQILKDTKSITSAMNELQHDLDVVSDALAKVSRKPSI',
-			   'MPEAPPLLLAAVLLGLVLLVVLLLLLRHWGWGLCLIGWNEFILQPIHNLLMGDTKEQRILNHVLQHAEPGNAQSVLEAIDTYCEQKEWAMNVGDKKGKIVDAVIQEHQPSVLLELGAYCGYSAVRMARLLSPGARLITIEINPDCAAITQRMVDFAGVKDKVTLVVGASQDIIPQLKKKYDVDTLDMVFLDHWKDRYLPDTLLLEECGLLRKGTVLLADNVICPGAPDFLAHVRGSSCFECTHYQSFLEYREVVDGLEKAIYKGPGSEAGP',
-			   'MALSELALVRWLQESRRSRKLILFIVFLALLLDNMLLTVVVPIIPSYLYSIKHEKNATEIQTARPVHTASISDSFQSIFSYYDNSTMVTGNATRDLTLHQTATQHMVTNASAVPSDCPSEDKDLLNENVQVGLLFASKATVQLITNPFIGLLTNRIGYPIPIFAGFCIMFVSTIMFAFSSSYAFLLIARSLQGIGSSCSSVAGMGMLASVYTDDEERGNVMGIALGGLAMGVLVGPPFGSVLYEFVGKTAPFLVLAALVLLDGAIQLFVLQPSRVQPESQKGTPLTTLLKDPYILIAAGSICFANMGIAMLEPALPIWMMETMCSRKWQLGVAFLPASISYLIGTNIFGILAHKMGRWLCALLGMIIVGVSILCIPFAKNIYGLIAPNFGVGFAIGMVDSSMMPIMGYLVDLRHVSVYGSVYAIADVAFCMGYAIGPSAGGAIAKAIGFPWLMTIIGIIDILFAPLCFFLRSPPAKEEKMAILMDHNCPIKTKMYTQNNIQSYPIGEDEESESD'
-			  ]
+			   'MPEAPPLLLAAVLLGLVLLVVLLLLLRHWGWGLCLIGWNEFILQPIHNLLMGDTKEQRILNHVLQHAEPGNAQSVLEAIDTYCEQKEWAMNVGDKKGKIVDAVIQEHQPSVLLELGAYCGYSAVRMARLLSPGARLITIEINPDCAAITQRMVDFAGVKDKVTLVVGASQDIIPQLKKKYDVDTLDMVFLDHWKDRYLPDTLLLEECGLLRKGTVLLADNVICPGAPDFLAHVRGSSCFECTHYQSFLEYREVVDGLEKAIYKGPGSEAGP'
+		]
+
+# Raw dict that will be updated with an input data.
+# It prevents from making dictionaries of aa_content with different lengths.
+# Thus such data structure will make it easy to create visualization.
+raw_aa_dict = {'A': 0,'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J':0, 'K': 0, 'L': 0, 'M': 0, 'N': 0,
+                         'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'V': 0, 'W': 0,'X':0, 'Y': 0,'Z': 0}
 
 aa_quantity_list, count_aa_list, aa_content_molecular_weight_list, aa_gravy_values, aa_gravy_list, aa_aromatic_list, aa_isoelectric_list, aa_instability_list, \
 flexibility_list, aa_instability_values, secondary_structure_fraction_list, percent_structure_list, epsilon_prot_list = [], [], [], [], [], [], [], [], [], [], [], [], []
+
 for seq in seq_protein:
 	aa_quantity = len(seq)
 	aa_quantity_list.append(aa_quantity)
 	analysed_seq = ProteinAnalysis(seq)
 	count_aa = analysed_seq.count_amino_acids()
-	count_aa_list.append(count_aa)
+	raw_temp_aa_dict = copy.deepcopy(raw_aa_dict)
+	raw_temp_aa_dict.update((k,count_aa[k]) for k in raw_aa_dict.keys() & count_aa.keys())
+	count_aa_list.append(raw_temp_aa_dict)
 	aa_content_molecular_weight = round(analysed_seq.molecular_weight(), 3)
 	aa_content_molecular_weight_list.append(aa_content_molecular_weight)
 	aa_gravy = round(analysed_seq.gravy(), 3)
@@ -48,6 +60,8 @@ for protein in secondary_structure_fraction_list:
 	percent_structure = [round(structure*100, 2) for structure in protein]
 	percent_structure_list.append(percent_structure)
 
+
+
 print("Number of amino acids of each protein")
 print(aa_quantity_list)
 print("\nCounts the number times an amino acid is repeated in the protein sequence and return list of dicts.")
@@ -55,8 +69,8 @@ print(count_aa_list)
 print("\nMolecular weight of a protein in Dalton unit")
 print(aa_content_molecular_weight_list)
 """
-Grand average of hydropathicity index (GRAVY) is used to represent the hydrophobicity value of a peptide, 
-which calculates the sum of the hydropathy values of all the amino acids divided by the sequence length. 
+Grand average of hydropathicity index (GRAVY) is used to represent the hydrophobicity value of a peptide,
+which calculates the sum of the hydropathy values of all the amino acids divided by the sequence length.
 Positive GRAVY values indicate hydrophobic, negative values mean hydrophilic.
 """
 print("\nPositive GRAVY values indicate hydrophobic, negative values mean hydrophilic.")
@@ -87,7 +101,10 @@ print(epsilon_prot_list)
 
 print("\nImplementation of the flexibility method of Vihinen et al. (1994, Proteins, 19, 141-149)."
 	  "\nTo view the change along a protein sequence can be plotted, with flexibility as scale")
-# print(flexibility_list)
-# example
-plt.plot(flexibility_list[0])
-plt.show()
+print(flexibility_list)
+
+
+
+# # # example
+# plt.plot(flexibility_list[0])
+# plt.show()
