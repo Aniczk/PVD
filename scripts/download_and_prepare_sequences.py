@@ -5,11 +5,6 @@ import shutil
 
 # Find UIDs for SwissProt/UniProt entries
 
-protein_list = ['TPH1', 'COMT', 'SLC18A2', 'HTR1B', 'HTR2C', 'HTR2A', 'MAOA',
-                'TPH2', 'HTR1A', 'HTR7', 'SLC6A4', 'GABBR2', 'POMC', 'GNAI3',
-                'NPY', 'ADCY1', 'PDYN', 'GRM2', 'GRM3', 'GABBR1']
-
-
 def download_files(protein_list):
     for g in protein_list:
         query = entrez.SimpleQuery(g, "Gene Name") & entrez.SimpleQuery("Homo sapiens", "Organism") & entrez.SimpleQuery(
@@ -55,7 +50,9 @@ def clean_up():
     shutil.rmtree(os.getcwd() + '/temp')
 
 
-prepare()
-download_files(protein_list)
-print(convert_files_to_list(create_files_list(protein_list)))
-clean_up()
+def list_of_proteins(protein_list):
+    prepare()
+    download_files(protein_list)
+    L = convert_files_to_list(create_files_list(protein_list))
+    clean_up()
+    return L
