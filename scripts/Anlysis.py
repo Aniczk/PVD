@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import copy
 import sys
 from download_and_prepare_sequences import list_of_proteins
-
+import pandas as pd
 
 parameters = sys.argv[1:]
 
