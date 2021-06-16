@@ -1,21 +1,9 @@
 #!/usr/bin/env python3
 
-import pandas as pd
-import numpy as np
 import seaborn as sns
 from typing import List, Dict, Tuple, Union, Optional
+import matplotlib.patches as mpatches
 from Anlysis import *
-
-'''
-TODO:
-- Create class that visualize protein important features:
-    1. AA content in dataframe. (Amino acid left, percentage for each of two) Done
-    2. Molecular weight and GRAVY as string. Done
-    3. Isoelectric [pH x axis and y isoelectric point] and aromaticity and percent secondary  as bar plot.
-    4. Flexibility as plot (already is). Done
-    5. Stability bar plot (dynamic coloring)
-    6. Epsilon String with explanation.
- '''
 
 
 class Visualizer():
@@ -57,7 +45,7 @@ class Visualizer():
         :param epsilon:
         :param flex:
 
-        :return:
+        :return: Various plots describing proteins features.
         """
         self.aa_content = aa_content
         self.mol_weight = mol_weight
@@ -91,7 +79,6 @@ class Visualizer():
 
     def plot_flexibility(self):
         """
-
         :return:
         """
 
@@ -101,17 +88,86 @@ class Visualizer():
         ax2.plot(flexibility_list[1], color='c')
         ax1.set_xlabel(proteins[0], fontweight='bold')
         ax2.set_xlabel(proteins[1], fontweight='bold')
-        # plt.savefig('flexibility.png')
+        plt.savefig('flexibility.png')
+
+
+    def instability(self):
+        """
+        :return: Dynamic barplot for instability. Depends
+        on the instability value the bar will change its color.
+        """
+        colors = [] # for dynamic bars coloring
+        fig_in, axi = plt.subplots(1, 1, figsize=(10, 5))
+        fig_in.suptitle('Instability of protein', fontsize=14.0, fontweight='bold')
+        for value in aa_instability_values:
+            if value > 40:
+                colors.append('orangered')
+            elif value <= 40:
+                colors.append('forestgreen')
+
+        axi.bar(proteins, aa_instability_values, color=colors, width=0.5)
+        stable = mpatches.Patch(color='forestgreen', label='stable')
+        unstable = mpatches.Patch(color='orangered', label='unstable')
+        axi.legend(loc='center', handles=[stable, unstable])
+
+        plt.savefig('instability.png')
+
 
     def second_structure(self):
         """
+        :return: Barplot describing fraction of amino acids
+        which tend to be in helix, turn or sheet
+        """
+        formations = ['Helix','Turn','Sheet'] # categorical data plot on xaxs
+        colors = ['yellowgreen','olivedrab','darkolivegreen'] # setting bar colors
+        fig_s, (axs1, axs2) = plt.subplots(1, 2, figsize=(10, 5))
+        fig_s.suptitle('Secondary structure fraction',fontsize=14.0)
+        axs1.bar(formations,secondary_structure_fraction_list[0],color=colors, edgecolor='black')
+        axs1.set_title(proteins[0], fontweight='bold')
+        axs2.bar(formations, secondary_structure_fraction_list[1], color=colors, edgecolor='black')
+        axs2.set_title(proteins[1], fontweight='bold')
+        axs1.set_ylabel('Percentage')
 
+        plt.savefig('ss_fraction.png')
+
+    def iso_and_arom_plot(self):
+        """
         :return:
         """
-    fig_s, (axs1,axs2) = plt.subplots(1,2, figsize=(9,15))
+        iso_elec_df = to_dataframe(proteins,'Isoelectric',aa_isoelectric_list)
+        aromaticity_df = to_dataframe(proteins,'Aromaticity',aa_aromatic_list)
+        fig, (barplot1, barplot2) = plt.subplots(1, 2, figsize=(10, 5))
+        sns.barplot(data=iso_elec_df, x='ID', y='Isoelectric', ax=barplot1)
+        sns.barplot(data=aromaticity_df, x='ID', y='Aromaticity', ax=barplot2)
+
+        plt.savefig('iso_and_arom.png')
+
+
+    def epsilon_value(self):
+        """
+        :return: Plotting molar extinction coefficient
+        """
+        categories = ['Reduced cysteines', 'Disulfid bridges']
+        fig, (bplot1, bplot2) = plt.subplots(1, 2, figsize=(10, 5))
+        fig.suptitle('Molar extinction coefficient', fontsize=14.0)
+        bplot1.bar(categories, epsilon_prot_list[0], color=['r', 'y'], edgecolor='black')
+        bplot1.set_title(proteins[0], fontweight='bold')
+        bplot2.bar(categories, epsilon_prot_list[1], color=['r', 'y'], edgecolor='black')
+        bplot2.set_title(proteins[1], fontweight='bold')
+
+        plt.savefig('epsilon.png')
 
 
 
-
-myClass = Visualizer()
-print(myClass.aa_content_dataframe())
+# generating png files and dataframe in html
+vis = Visualizer(count_aa_list,aa_content_molecular_weight,aa_gravy_list,
+           aa_aromatic_list,aa_isoelectric_list, aa_instability_values,
+           percent_structure_list,epsilon_prot_list,flexibility_list,proteins)
+mol_weight = vis.mol_weight
+gravy = vis.gravy
+vis.aa_content_dataframe()
+vis.plot_flexibility()
+vis.second_structure()
+vis.iso_and_arom_plot()
+vis.epsilon_value()
+vis.instability()
