@@ -6,6 +6,7 @@ import copy
 import sys
 from download_and_prepare_sequences import list_of_proteins
 
+
 parameters = sys.argv[1:]
 
 organism = parameters[0] + ' ' + parameters[1]
@@ -66,50 +67,17 @@ for protein in secondary_structure_fraction_list:
 	percent_structure_list.append(percent_structure)
 
 
+def to_dataframe(proteins_id,char,char_list):
+	"""
+	transforms dictionary ,that contains proteins'
+	features and respectively protein id,
+	into dataframe. Both functiona parameteres
+	are lists.
+	"""
+	dictionary = {'ID':proteins_id,char: char_list}
 
-print("Number of amino acids of each protein")
-print(aa_quantity_list)
-print("\nCounts the number times an amino acid is repeated in the protein sequence and return list of dicts.")
-print(count_aa_list)
-print("\nMolecular weight of a protein in Dalton unit")
-print(aa_content_molecular_weight_list)
-"""
-Grand average of hydropathicity index (GRAVY) is used to represent the hydrophobicity value of a peptide,
-which calculates the sum of the hydropathy values of all the amino acids divided by the sequence length.
-Positive GRAVY values indicate hydrophobic, negative values mean hydrophilic.
-"""
-print("\nPositive GRAVY values indicate hydrophobic, negative values mean hydrophilic.")
-print(aa_gravy_values)
-print(aa_gravy_list)
-print("\nThe presence of aromatic amino acids in seq [%]. Based on frequency of Phe+Trp+Tyr."
-	  "\nCalculates the aromaticity value of a protein according to Lobry & Gautier (1994, Nucleic Acids Res., 22, 3174-3180).")
-print(aa_aromatic_list)
-print("\nIsoelectric point it is the pH at which a protein contains on average the same number of positive and negative charges"
-	  "\nso that the total charge of the entire population is zero so it is electrically neutral."
-	  "\nAlgorithm according to a note by David L. Tabb, 6/28/03")
-print(aa_isoelectric_list)
+	# transforming values to a vector
+	# so it could be used for visualization
+	data_frame = pd.DataFrame.from_dict(dictionary)
+	return data_frame
 
-print("\nThis method tests a protein for stability. Any value above 40 means the protein is unstable (=has a short half life)"
-	  "\nImplementation of the method of Guruprasad et al. (1990, Protein Engineering, 4, 155-161).")
-print(aa_instability_values)
-print(aa_instability_list)
-print("\nMethod returns a list of the fraction of amino acids which tend to be in helix, turn or sheet:"
-	  "\nhelix: V (Valine), I (Isoleucine), Y (Tyrosine), F (Phenylalanine), W (Tryptophan), L (Leucine),"
-	  "\nturn: N (Asparagine), P (Proline), G (Glycine), S (Serine),"
-	  "\nsheet: E (Glutamic acid), M (Methionine), A (Alanine), L (Leucine)."
-	  "\nFor each protein every element represent percent [%] respectively helix, turn and sheet occurrence")
-print(percent_structure_list)
-print("\nCalculate the molar extinction coefficient."
-	  "\nCalculates the molar extinction coefficient assuming cysteines (reduced) and cystines residues (Cys-Cys-bond)"
-	  "\n[reduced - with reduced cysteines, oxidized - with disulfid bridges]")
-print(epsilon_prot_list)
-
-print("\nImplementation of the flexibility method of Vihinen et al. (1994, Proteins, 19, 141-149)."
-	  "\nTo view the change along a protein sequence can be plotted, with flexibility as scale")
-print(flexibility_list)
-
-
-
-# # # example
-# plt.plot(flexibility_list[0])
-# plt.show()
